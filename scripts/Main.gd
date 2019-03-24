@@ -12,6 +12,9 @@ onready var restart = get_node("TimerToRestart")
 onready var barra = get_node("Barra")
 onready var lblScore = get_node("Control/Score")
 
+onready var mjolnir = get_node("MjolnirSound")
+onready var slap = get_node("SlapFingerSound")
+
 var enemy
 var state
 var score = 0
@@ -39,6 +42,7 @@ func _input(event):
 			
 			if !verifyCollision():
 				bixin.bater()
+				mjolnir.play()
 				var barr = barris.get_children()[0]
 				barris.remove_child(barr)
 				destroy.add_child(barr)
@@ -99,6 +103,7 @@ func descerBarris():
 		b.position += Vector2(0, 172)
 
 func perder():
+	slap.play()
 	bixin.morrer()
 	restart.start()
 	state = PERDEU
