@@ -9,9 +9,13 @@ onready var cam = get_node("Camera")
 onready var barris = get_node("Barris")
 onready var destroy = get_node("DestroyBarris")
 onready var restart = get_node("TimerToRestart")
+onready var barra = get_node("Barra")
+onready var lblScore = get_node("Control/Score")
 
 var enemy
 var state
+var score = 0
+
 const JOGANDO = 1
 const PERDEU = 2
 
@@ -20,6 +24,8 @@ func _ready():
 	set_process_input(true)
 	initialize()
 	state = JOGANDO
+	
+	barra.connect("perdeu", self, "perder")
 
 func _input(event):
 	event = cam.make_input_local(event)
@@ -41,15 +47,15 @@ func _input(event):
 				randBarril(Vector2(360, -630))
 				descerBarris()
 				
+				barra.increase(0.028)
+				score += 1
+				lblScore.set_text(str(score))
+				
 				if verifyCollision():
 					perder()
-					restart.start()
-					state = PERDEU
 					
 			else:
 				perder()
-				restart.start()
-				state = PERDEU
 
 func gerarBarril(tipo, pos):
 	var nB
@@ -94,7 +100,13 @@ func descerBarris():
 
 func perder():
 	bixin.morrer()
+	restart.start()
+	state = PERDEU
+	barra.set_process(false)
 
 func _on_TimerToRestart_timeout():
+	score = 0
+	lblScore.set_text(str(score))
 	state = JOGANDO
 	get_tree().reload_current_scene()
+
