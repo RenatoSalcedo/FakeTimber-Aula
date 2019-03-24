@@ -8,37 +8,48 @@ onready var bixin = get_node("Bixin")
 onready var cam = get_node("Camera")
 onready var barris = get_node("Barris")
 onready var destroy = get_node("DestroyBarris")
+onready var restart = get_node("TimerToRestart")
 
 var enemy
+var state
+const JOGANDO = 1
+const PERDEU = 2
 
 func _ready():
 	randomize()
 	set_process_input(true)
 	initialize()
+	state = JOGANDO
 
 func _input(event):
 	event = cam.make_input_local(event)
-	if (event is InputEventMouseButton or event is InputEventScreenTouch) and event.is_pressed():
-		
-		if event.position.x < 360:
-			bixin.esq()
-		else:
-			bixin.dir()
-		
-		if !verifyCollision():
-			bixin.bater()
-			var barr = barris.get_children()[0]
-			barris.remove_child(barr)
-			destroy.add_child(barr)
-			barr.destroy(bixin.lado)
+	if state == JOGANDO:
+		if (event is InputEventMouseButton or event is InputEventScreenTouch) and event.is_pressed():
 			
-			randBarril(Vector2(360, -630))
-			descerBarris()
+			if event.position.x < 360:
+				bixin.esq()
+			else:
+				bixin.dir()
 			
-			if verifyCollision():
+			if !verifyCollision():
+				bixin.bater()
+				var barr = barris.get_children()[0]
+				barris.remove_child(barr)
+				destroy.add_child(barr)
+				barr.destroy(bixin.lado)
+				
+				randBarril(Vector2(360, -630))
+				descerBarris()
+				
+				if verifyCollision():
+					perder()
+					restart.start()
+					state = PERDEU
+					
+			else:
 				perder()
-		else:
-			perder()
+				restart.start()
+				state = PERDEU
 
 func gerarBarril(tipo, pos):
 	var nB
@@ -83,3 +94,7 @@ func descerBarris():
 
 func perder():
 	bixin.morrer()
+
+func _on_TimerToRestart_timeout():
+	state = JOGANDO
+	get_tree().reload_current_scene()

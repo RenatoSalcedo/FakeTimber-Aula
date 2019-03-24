@@ -78,3 +78,7 @@ current = true
 
 [node name="DestroyBarris" type="Node2D" parent="."]
 
+[node name="TimerToRestart" type="Timer" parent="."]
+wait_time = 3.0
+
+[connection signal="timeout" from="TimerToRestart" to="." method="_on_TimerToRestart_timeout"]
