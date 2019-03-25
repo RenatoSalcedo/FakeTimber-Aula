@@ -33,7 +33,7 @@ func _ready():
 func _input(event):
 	event = cam.make_input_local(event)
 	if state == JOGANDO:
-		if (event is InputEventMouseButton or event is InputEventScreenTouch) and event.is_pressed():
+		if (event is InputEventScreenTouch) and event.is_pressed():
 			
 			if event.position.x < 360:
 				bixin.esq()
